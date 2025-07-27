@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Campaigns from "./pages/Campaigns";
 import Backlinks from "./pages/Backlinks";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,7 +50,7 @@ const App = () => (
             } />
             <Route path="/dashboard/analytics" element={
               <DashboardLayout>
-                <div className="text-center p-8">Analytics page coming soon</div>
+                <Analytics />
               </DashboardLayout>
             } />
             <Route path="/dashboard/settings" element={
