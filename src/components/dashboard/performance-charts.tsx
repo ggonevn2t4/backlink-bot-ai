@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend, Tooltip } from "recharts";
 
 const lineChartData = [
   { month: "Jan", backlinks: 45 },
@@ -25,6 +25,23 @@ const barChartData = [
   { campaign: "Directories", success: 68, failed: 32 },
 ];
 
+// Custom tooltip component
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
+        <p className="text-foreground font-medium">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function PerformanceCharts() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -46,6 +63,7 @@ export function PerformanceCharts() {
                 stroke="hsl(var(--muted-foreground))"
                 fontSize={12}
               />
+              <Tooltip content={<CustomTooltip />} />
               <Line 
                 type="monotone" 
                 dataKey="backlinks" 
@@ -80,6 +98,7 @@ export function PerformanceCharts() {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
+              <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
           <div className="grid grid-cols-1 gap-2 mt-4">
@@ -117,6 +136,7 @@ export function PerformanceCharts() {
                 stroke="hsl(var(--muted-foreground))"
                 fontSize={12}
               />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="success" fill="#10b981" name="Success" />
               <Bar dataKey="failed" fill="#ef4444" name="Failed" />
