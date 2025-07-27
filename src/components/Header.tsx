@@ -23,9 +23,11 @@ const Header = () => {
           <Button variant="outline" className="hidden md:inline-flex">
             Login
           </Button>
-          <Button variant="hero">
-            Start Free Trial
-          </Button>
+          <a href="/dashboard">
+            <Button variant="hero">
+              Start Free Trial
+            </Button>
+          </a>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
           </Button>
