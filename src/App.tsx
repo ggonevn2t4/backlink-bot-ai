@@ -32,6 +32,11 @@ const App = () => (
                 <Campaigns />
               </DashboardLayout>
             } />
+            <Route path="/dashboard/campaigns/:id" element={
+              <DashboardLayout>
+                <div className="text-center p-8">Campaign details coming soon</div>
+              </DashboardLayout>
+            } />
             <Route path="/dashboard/backlinks" element={
               <DashboardLayout>
                 <Backlinks />
