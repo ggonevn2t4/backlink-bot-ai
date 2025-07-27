@@ -10,6 +10,8 @@ import {
   CreditCard,
   ChevronLeft,
   ChevronRight,
+  LogOut,
+  User,
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,6 +28,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navigation = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
@@ -42,6 +46,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const currentPath = location.pathname;
+  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => {
     if (path === "/dashboard") {
@@ -107,9 +112,49 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-4">
-        <div className="flex items-center justify-center">
+      <SidebarFooter className="border-t border-sidebar-border p-4 space-y-4">
+        {!collapsed && user && (
+          <div className="flex items-center space-x-3 p-2 rounded-lg bg-sidebar-accent/50">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="text-xs">
+                {user.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {user.user_metadata?.full_name || user.email}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user.email}
+              </p>
+            </div>
+          </div>
+        )}
+        
+        <div className="flex items-center justify-between">
           <ThemeToggle />
+          {!collapsed && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          )}
+          {collapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={signOut}
+              className="h-8 w-8"
+              title="Sign Out"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCampaigns, type Campaign } from "@/hooks/useCampaigns";
+import { formatDistanceToNow } from "date-fns";
 import {
   Table,
   TableBody,
@@ -40,72 +42,8 @@ import {
   ArrowUpDown
 } from "lucide-react";
 
-interface Campaign {
-  id: string;
-  name: string;
-  targetUrl: string;
-  keywords: string[];
-  status: "active" | "paused" | "completed";
-  progress: number;
-  createdDate: string;
-  successRate: number;
-  backlinks: number;
-  type: string;
-}
-
-const mockCampaigns: Campaign[] = [
-  {
-    id: "1",
-    name: "Tech Blog Outreach",
-    targetUrl: "https://example.com/product",
-    keywords: ["SEO tools", "link building", "automation"],
-    status: "active",
-    progress: 65,
-    createdDate: "2024-01-15",
-    successRate: 87,
-    backlinks: 145,
-    type: "Guest Posts"
-  },
-  {
-    id: "2",
-    name: "Startup Directory Submissions",
-    targetUrl: "https://example.com/startup",
-    keywords: ["startup", "SaaS", "productivity"],
-    status: "paused",
-    progress: 34,
-    createdDate: "2024-01-10",
-    successRate: 72,
-    backlinks: 89,
-    type: "Directory"
-  },
-  {
-    id: "3",
-    name: "Forum Engagement Campaign",
-    targetUrl: "https://example.com/blog",
-    keywords: ["marketing", "growth hacking"],
-    status: "completed",
-    progress: 100,
-    createdDate: "2024-01-05",
-    successRate: 91,
-    backlinks: 234,
-    type: "Blog Comments"
-  },
-  {
-    id: "4",
-    name: "Industry News Outreach",
-    targetUrl: "https://example.com/news",
-    keywords: ["AI", "machine learning", "technology"],
-    status: "active",
-    progress: 28,
-    createdDate: "2024-01-20",
-    successRate: 83,
-    backlinks: 67,
-    type: "Guest Posts"
-  }
-];
-
 const Campaigns = () => {
-  const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns);
+  const { campaigns, isLoading, updateCampaign, deleteCampaign } = useCampaigns();
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -133,11 +71,11 @@ const Campaigns = () => {
     .sort((a, b) => {
       switch (sortBy) {
         case "date":
-          return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime();
-        case "progress":
-          return b.progress - a.progress;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "total":
+          return b.total_backlinks - a.total_backlinks;
         case "success":
-          return b.successRate - a.successRate;
+          return b.successful_backlinks - a.successful_backlinks;
         default:
           return 0;
       }
@@ -299,12 +237,12 @@ const Campaigns = () => {
                     <TableCell>
                       <div>
                         <div className="font-medium">{campaign.name}</div>
-                        <div className="text-sm text-muted-foreground">{campaign.type}</div>
+                        <div className="text-sm text-muted-foreground">Backlink Campaign</div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="max-w-[200px] truncate text-sm">
-                        {campaign.targetUrl}
+                        {campaign.target_url}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -324,20 +262,24 @@ const Campaigns = () => {
                     <TableCell>{getStatusBadge(campaign.status)}</TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <Progress value={campaign.progress} className="w-16" />
-                        <span className="text-xs text-muted-foreground">
-                          {campaign.progress}%
+                        <span className="text-sm font-medium">
+                          {campaign.successful_backlinks} / {campaign.total_backlinks}
                         </span>
+                        <div className="text-xs text-muted-foreground">
+                          backlinks
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm font-medium">
-                        {campaign.successRate}%
+                        {campaign.total_backlinks > 0 
+                          ? Math.round((campaign.successful_backlinks / campaign.total_backlinks) * 100)
+                          : 0}%
                       </span>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        {new Date(campaign.createdDate).toLocaleDateString()}
+                        {formatDistanceToNow(new Date(campaign.created_at), { addSuffix: true })}
                       </div>
                     </TableCell>
                     <TableCell>
